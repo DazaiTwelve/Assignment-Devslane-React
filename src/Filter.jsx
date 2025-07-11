@@ -12,6 +12,7 @@ export default function Filter({ sortVal, onSortChange }) {
         <option value="title">Sort by Title</option>
         <option value="lowTohigh">Price: Low to High</option>
         <option value="highTolow">Price: High to Low</option>
+        <option value="sale">Sale Items</option>
       </select>
     </div>
   );
