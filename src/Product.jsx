@@ -5,7 +5,7 @@ export default function Product({ image, title, description, price }) {
       <img className="w-full h-56" src={image} alt="product" />
       <h1 className="text-gray-400 text-xs py-1">{title}</h1>
       <p className="text-sm pb-1 font-medium">{description}</p>
-      <p className="text-xs font-medium inline">INR{price}</p>
+      <p className="text-xs font-medium inline">{price}</p>
     </div>
   );
 }
