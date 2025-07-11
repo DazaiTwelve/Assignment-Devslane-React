@@ -170,6 +170,14 @@ export default function App() {
    return (
     <div className="flex flex-col items-center w-full min-h-screen">
       <Header />
+      <div className="flex justify-center my-4">
+        <input
+          type="text"
+          placeholder="Search products..."
+          onChange={(e) => setQuery(e.target.value)}
+          className="border p-2 w-72 rounded-md"
+        />
+      </div>
       <Routes>
         <Route path="/product/1" element={<ProductDetail />} />
         <Route
