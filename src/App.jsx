@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProductList from './ProductList.jsx';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
+import ProductDetail from './ProductDetail.jsx';
 
 export default function App() {
   const [query, setQuery] = useState('');
@@ -122,16 +123,9 @@ export default function App() {
   return (
     <>
       <Header />
-      <div className="flex justify-center my-4">
-        <input
-          type="text"
-          placeholder="Search products..."
-          onChange={(e) => setQuery(e.target.value)}
-          className="border p-2 w-72 rounded-md"
-        />
-      </div>
-      <ProductList products={filteredData} sortVal={sort} onSortChange={setSort} />
+      
+      <ProductDetail/>
       <Footer />
-    </>
+      </>
   );
 }
