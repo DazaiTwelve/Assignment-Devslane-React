@@ -10,7 +10,7 @@ export default function ProductDetail(){
         <h2 className="text-gray-600 text-xl md:text-4xl xl:text-5xl font-medium">INR100.00</h2>
         <p className="text-gray-500 xl:text-xl">Great Board must try must you one of the best must try.</p>
         <div>
-          <input type="text" value={_1} className='w-9 p-1.5 text-center  border mr-1 md:text-xl'/>
+          <input type="text" value={1} className='w-9 p-1.5 text-center  border mr-1 md:text-xl'/>
           <button className="px-4 py-2 text-white bg-red-400 rounded-md md:text-xl">ADD TO CART</button>
         </div>
       </div>
