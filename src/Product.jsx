@@ -1,27 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function Product({ image, title, description, price, sale, saleprice }) {
+export default function Product({ product, index }) {
+  if (!product) return null;
+
   return (
-    <div className="max-w-46 bg-white relative p-2 rounded shadow">
-      <img className="w-full h-56 object-cover" src={image} alt="product" />
-      <h1 className="text-gray-400 text-xs py-1">{title}</h1>
-      <p className="text-sm pb-1 font-medium">{description}</p>
-
-      {sale === "Sale" && (
-        <p className="inline text-xs text-gray-400 mr-1 line-through">₹{saleprice}</p>
-      )}
-      <p className="text-xs font-medium inline">₹{price}</p>
-
-      {sale === "Sale" && (
-        <div className="bg-red-400 text-xs rounded-full h-6 w-6 flex items-center justify-center absolute top-2 right-2 text-white">
-          {sale}
-        </div>
-      )}
-
-      <Link to="/product/1" className="text-blue-500 block mt-2">
+    <Link
+      to={`/product/${index}`}
+      state={{ product }}
+      className="w-64 block p-4 bg-white rounded shadow hover:shadow-md"
+    >
+      <img src={product.image} alt={product.title} className="w-full h-40 object-cover mb-2" />
+      <h3 className="text-lg font-semibold">{product.title}</h3>
+      <p className="text-sm text-gray-600">{product.description}</p>
+      <p className="mt-2 text-red-600 font-bold">₹{product.price}</p>
+      <button className="mt-2 bg-blue-500 text-white px-3 py-1 rounded">
         View Details
-      </Link>
-    </div>
+      </button>
+    </Link>
   );
 }
