@@ -27,11 +27,11 @@ export default function ProductDetail() {
       <img className="md:w-[50%]" src={product.image} alt={product.title} />
 
       <div className="flex flex-col gap-4">
-        <h1 className="text-gray-500 text-2xl md:text-5xl xl:text-6xl">{product.description}</h1>
-        <h2 className="text-gray-600 text-xl md:text-4xl xl:text-5xl font-medium">
+        <h1 className="text-green-500 text-2xl md:text-5xl xl:text-6xl">{product.description}</h1>
+        <h2 className="text-green-600 text-xl md:text-4xl xl:text-5xl font-small">
           ₹{product.price}
           {product.sale && (
-            <span className="text-sm text-red-500 line-through ml-4">₹{product.saleprice}</span>
+            <span className="text-sm text-grey-500 line-through ml-4">₹{product.saleprice}</span>
           )}
         </h2>
         <p className="text-gray-500 xl:text-xl">
