@@ -1,56 +1,141 @@
-import React, { useState } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
-import { LuCircleArrowLeft } from "react-icons/lu";
+// ProductDetail.jsx
+import React, { useEffect, useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import NotFound from './NotFound'; // Assuming this component exists
+import Loading from './Loading';   // Assuming this component exists
+// Removed unused react-icons imports for cleanliness: IoArrowBackCircleOutline, TiTick, FcPrevious, FcNext
+// Removed unused Button import, as it's not present in the provided snippet
 
-export default function ProductDetail() {
-  const { state } = useLocation();
+function getRandomHexColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+export default function ProductDetail({ onCartChange }) { // onCartChange is the prop to send data to parent
+  console.log("ProductDetail component rendered");
   const { id } = useParams();
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const product = state?.product;
+  const randomBgColor = useMemo(() => getRandomHexColor(), [id]);
 
+  const handleQuantityChange = (event) => {
+    const value = Math.max(1, parseInt(event.target.value, 10) || 1);
+    setQuantity(value);
+  };
+
+  const handleAddToCart = () => { // This function is triggered when the button is clicked
+    if (!product) {
+      console.warn("Cannot add to cart: Product data not loaded.");
+      return;
+    }
+    // This is the key part: it calls the 'onCartChange' prop with the item details.
+    // 'onCartChange' is expected to be a function provided by the parent (App.jsx)
+    // that handles adding the item to the global cart state and localStorage.
+    if (onCartChange) {
+      onCartChange({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        thumbnail: product.thumbnail, // Sending thumbnail for cart display
+        quantity: quantity // Sending the selected quantity
+      });
+      alert(`${quantity} of ${product.title} added to cart!`); // Provides immediate user feedback
+    } else {
+      console.warn("onCartChange prop is not provided to ProductDetail. Cart functionality is not connected.");
+      alert(`${quantity} of ${product.title} selected, but cart functionality is not connected.`);
+    }
+  };
+
+  useEffect(() => {
+    // Page background management
+    document.body.classList.add('bg-yellow-100');
+    document.body.classList.add('min-h-screen');
+
+    const source = axios.CancelToken.source();
+
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
+      setQuantity(1); // Reset quantity to 1 when a new product is loaded
+      try {
+        const response = await axios.get(`https://dummyjson.com/products/${id}`, {
+          cancelToken: source.token
+        });
+        setProduct(response.data);
+      } catch (err) {
+        if (axios.isCancel(err)) {
+          console.log('Request cancelled:', err.message);
+        } else {
+          setError(err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+
+    return () => {
+      document.body.classList.remove('bg-yellow-100');
+      document.body.classList.remove('min-h-screen');
+      source.cancel('ProductDetail component unmounted or ID changed');
+    };
+  }, [id]);
+
+  if (loading) {
+    return <Loading />;
+  }
+  if (error) {
+    return <div className="text-center p-8 text-lg text-red-600">Error loading product: {error.message}</div>;
+  }
   if (!product) {
-    return (
-      <div className="p-6">
-        <p className="text-red-600">❌ Product not found or data not passed correctly.</p>
-        <Link to="/" className="text-blue-600 underline">← Go back</Link>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (
-    <div className="flex flex-col md:flex-row py-4 px-8 my-4 bg-white gap-10 max-w-7xl relative">
-      <Link className="p-2 text-2xl self-start absolute -top-8 left-0 bg-white" to="/">
-        <LuCircleArrowLeft />
-      </Link>
+    <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-lg my-8">
+      <h2 className="text-3xl font-bold mb-4">{product.title}</h2>
+      <div
+        className="flex justify-center items-center p-4 rounded-lg mb-4"
+        style={{ backgroundColor: randomBgColor }}
+      >
+        <img
+          src={product.thumbnail}
+          alt={product.title}
+          className="max-w-full max-h-64 object-contain"
+        />
+      </div>
+      <p className="text-gray-700 mb-4">{product.description}</p>
+      <p className="text-2xl font-bold text-green-600 mb-4">${product.price}</p>
+      <div className="flex items-center mb-4">
+        <span className="text-yellow-500 mr-1">Rating: {product.rating}</span>
+        <span className="text-gray-500">({product.stock} in stock)</span>
 
-      <img className="md:w-[50%]" src={product.image} alt={product.title} />
+        <input
+          type="number"
+          value={quantity}
+          onChange={handleQuantityChange}
+          min="1"
+          max={product.stock}
+          className='w-20 p-1.5 text-center border border-gray-400 rounded-md ml-4'
+        />
 
-      <div className="flex flex-col gap-4">
-        <h1 className="text-gray-500 text-2xl md:text-5xl xl:text-6xl">{product.description}</h1>
-        <h2 className="text-gray-600 text-xl md:text-4xl xl:text-5xl font-medium">
-          ₹{product.price}
-          {product.sale && (
-            <span className="text-sm text-red-500 line-through ml-4">₹{product.saleprice}</span>
-          )}
-        </h2>
-        <p className="text-gray-500 xl:text-xl">
-          A great board for all kinds of riders. Durable, stylish, and smooth. Glide into the streets with confidence.
-        </p>
-        <div>
-          <input
-            type="number"
-            min="1"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="w-16 p-1.5 text-center border mr-2 md:text-xl"
-          />
-          <button className="px-4 py-2 text-white bg-red-400 rounded-md md:text-xl">
-            ADD TO CART
-          </button>
-        </div>
+        {/* The onClick event calls handleAddToCart, which then uses the onCartChange prop */}
+        <button
+          onClick={handleAddToCart}
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   );
 }
-
